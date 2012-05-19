@@ -1,3 +1,9 @@
+Version 0.28.1, Mon Jun 11 2012
+
+  * CPU timing fix.
+  * Temporary fix for French keyboard: superscript 2 mapped to Clear.
+  * Fix emulation of Dragon 32 with 64K.
+
 Version 0.28, Sat May 12 2012
 
   * New keyboard map: Canadian French [Pierre Sarrazin]
