@@ -1037,11 +1037,14 @@ called @file{xroar.conf}.  This file is searched for in a variety of locations:
 
 @multitable {Mac OS X.} {~/Local Settings/Application Data/XRoar/zzzzzzzzzz}
 @headitem System @tab Search order
-@item Unix@*
-Mac OS X
-@tab Current working directory@*
+@item Unix
+@tab @file{~/.xroar/}@*
+@file{@emph{PREFIX}/etc/xroar/}@*
+@file{@emph{PREFIX}/share/xroar/}
+@item Mac OS X
+@tab @file{~/Library/XRoar/}@*
 @file{~/.xroar/}@*
-@file{~/Library/XRoar/}@*
+@file{@emph{PREFIX}/etc/xroar/}@*
 @file{@emph{PREFIX}/share/xroar/}
 @item Windows
 @tab Current working directory@*
