@@ -54,9 +54,13 @@ static void open_stream(struct printer_interface_private *pip);
 
 static void coco_print_byte(void *);
 
-static struct machine_bp coco_print_breakpoint[] = {
-	BP_COCO_ROM(.address = 0xa2c1, .handler = DELEGATE_AS0(void, coco_print_byte, NULL) ),
-};
+// XXX work around gcc-4 bug thinking delegate declarations aren't constant
+
+static struct machine_bp coco_print_breakpoint[1];
+
+void printer_init(void) {
+	coco_print_breakpoint[0] = BP_COCO_ROM(.address = 0xa2c1, .handler = DELEGATE_AS0(void, coco_print_byte, NULL) );
+}
 
 struct printer_interface *printer_interface_new(struct machine *m) {
 	struct printer_interface_private *pip = xmalloc(sizeof(*pip));

@@ -123,6 +123,7 @@ void tape_update_output(struct tape_interface *ti, uint8_t value);
 #define TAPE_PAD_AUTO (1 << 2)
 #define TAPE_REWRITE (1 << 3)
 
+void tape_init(void);
 void tape_set_state(struct tape_interface *ti, int flags);
 void tape_select_state(struct tape_interface *ti, int flags);  /* set & update UI */
 int tape_get_state(struct tape_interface *ti);

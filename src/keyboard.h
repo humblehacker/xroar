@@ -74,6 +74,8 @@ enum keyboard_chord_mode {
 	keyboard_chord_mode_coco_basic
 };
 
+void keyboard_init(void);
+
 struct keyboard_interface *keyboard_interface_new(struct machine *m);
 void keyboard_interface_free(struct keyboard_interface *ki);
 
