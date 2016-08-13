@@ -487,12 +487,6 @@ _Bool xroar_init(int argc, char **argv) {
 	windows32_init();
 #endif
 
-	// Annoying init() routines that set up arrays that can't be globally
-	// initialised in gcc-4
-	keyboard_init();
-	printer_init();
-	tape_init();
-
 	machine_init();
 	cart_init();
 

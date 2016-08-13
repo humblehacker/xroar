@@ -14,8 +14,6 @@ struct printer_interface {
 	DELEGATE_T1(void, bool) signal_ack;
 };
 
-void printer_init(void);
-
 struct printer_interface *printer_interface_new(struct machine *m);
 void printer_interface_free(struct printer_interface *pi);
 void printer_reset(struct printer_interface *pi);

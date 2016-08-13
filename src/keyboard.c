@@ -54,18 +54,14 @@ struct keyboard_interface_private {
 
 static void type_command(void *);
 
-// XXX work around gcc-4 bug thinking delegate declarations aren't constant
-
-static struct machine_bp basic_command_breakpoint[6];
-
-void keyboard_init(void) {
-	basic_command_breakpoint[0] = BP_DRAGON_ROM(.address = 0xbbe5, .handler = DELEGATE_AS0(void, type_command, NULL) );
-	basic_command_breakpoint[1] = BP_COCO_BAS10_ROM(.address = 0xa1c1, .handler = DELEGATE_AS0(void, type_command, NULL) );
-	basic_command_breakpoint[2] = BP_COCO_BAS11_ROM(.address = 0xa1c1, .handler = DELEGATE_AS0(void, type_command, NULL) );
-	basic_command_breakpoint[3] = BP_COCO_BAS12_ROM(.address = 0xa1cb, .handler = DELEGATE_AS0(void, type_command, NULL) );
-	basic_command_breakpoint[4] = BP_COCO_BAS13_ROM(.address = 0xa1cb, .handler = DELEGATE_AS0(void, type_command, NULL) );
-	basic_command_breakpoint[5] = BP_MX1600_BAS_ROM(.address = 0xa1cb, .handler = DELEGATE_AS0(void, type_command, NULL) );
-}
+static struct machine_bp basic_command_breakpoint[] = {
+	BP_DRAGON_ROM(.address = 0xbbe5, .handler = DELEGATE_AS0(void, type_command, NULL) ),
+	BP_COCO_BAS10_ROM(.address = 0xa1c1, .handler = DELEGATE_AS0(void, type_command, NULL) ),
+	BP_COCO_BAS11_ROM(.address = 0xa1c1, .handler = DELEGATE_AS0(void, type_command, NULL) ),
+	BP_COCO_BAS12_ROM(.address = 0xa1cb, .handler = DELEGATE_AS0(void, type_command, NULL) ),
+	BP_COCO_BAS13_ROM(.address = 0xa1cb, .handler = DELEGATE_AS0(void, type_command, NULL) ),
+	BP_MX1600_BAS_ROM(.address = 0xa1cb, .handler = DELEGATE_AS0(void, type_command, NULL) ),
+};
 
 struct keyboard_interface *keyboard_interface_new(struct machine *m) {
 	struct keyboard_interface_private *kip = xmalloc(sizeof(*kip));
