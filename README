@@ -121,8 +121,8 @@ Compilation
 Once you have the dependencies, building XRoar follows a familiar
 procedure:
 
-     $ gzip -dc xroar-0.34.2.tar.gz | tar xvf -
-     $ cd xroar-0.34.2
+     $ gzip -dc xroar-0.34.3.tar.gz | tar xvf -
+     $ cd xroar-0.34.3
      $ ./configure
      $ make
      $ sudo make install
