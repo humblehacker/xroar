@@ -202,7 +202,7 @@ static int create_renderer(void) {
 		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 	}
 
-	renderer = SDL_CreateRenderer(sdl_window, -1, 0);
+	renderer = SDL_CreateRenderer(sdl_window, -1, SDL_RENDERER_PRESENTVSYNC);
 	if (!renderer) {
 		LOG_ERROR("Failed to create renderer\n");
 		return -1;
