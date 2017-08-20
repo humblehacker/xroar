@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT([xroar], [0.34.7])
+AC_INIT([xroar], [0.34.8])
 AM_INIT_AUTOMAKE([foreign])
 
 MANPAGE_DATE="January 2017"
