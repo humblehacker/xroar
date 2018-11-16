@@ -1,3 +1,7 @@
+Version 0.36, unreleased
+
+  * Fix SAM S output in map type 1 [Pere Serrat]
+
 Version 0.35, Fri Jun 27 2018
 
   * New EXTMEM/SLENB support allows cartridges to inhibit normal device select
