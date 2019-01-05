@@ -33,8 +33,10 @@ See COPYING.GPL for redistribution conditions.
 #include <unistd.h>
 
 #import <Cocoa/Cocoa.h>
+//#import <AppKit/AppKit.h>
 
 #include "slist.h"
+#include "xalloc.h"
 
 #include "logging.h"
 #include "cart.h"
@@ -237,8 +239,9 @@ int cocoa_super_all_keys = 0;
 			xroar_select_tape_output();
 			break;
 		case TAG_TAPE_INPUT_REWIND:
-			if (tape_interface && tape_interface->tape_input)
-				tape_rewind(tape_interface->tape_input);
+			if (xroar_tape_interface->tape_input) {
+				tape_seek(xroar_tape_interface->tape_input, 0, SEEK_SET);
+			}
 			break;
 		case TAG_ZOOM_IN:
 			sdl_zoom_in();
@@ -272,7 +275,7 @@ int cocoa_super_all_keys = 0;
 
 	/* Cassettes: */
 	case TAG_TAPE_FLAGS:
-		tape_set_state(tape_interface, tape_get_state(tape_interface) ^ tag_value);
+		tape_set_state(xroar_tape_interface, tape_get_state(xroar_tape_interface) ^ tag_value);
 		break;
 
 	/* Disks: */
@@ -304,13 +307,13 @@ int cocoa_super_all_keys = 0;
 		xroar_set_cross_colour(0, tag_value);
 		break;
 	case TAG_VDG_INVERSE:
-		xroar_set_vdg_inverted_text(0, XROAR_TOGGLE);
+		xroar_set_vdg_inverted_text(0, XROAR_NEXT);
 		break;
 
 	/* Audio: */
 	case TAG_FAST_SOUND:
 		is_fast_sound = !is_fast_sound;
-		machine_set_fast_sound(is_fast_sound);
+		xroar_set_fast_sound(0, is_fast_sound);
 		break;
 
 	/* Keyboard: */
@@ -359,7 +362,7 @@ int cocoa_super_all_keys = 0;
 		break;
 
 	case TAG_TAPE_FLAGS:
-		[item setState:((tape_get_state(tape_interface) & tag_value) ? NSOnState : NSOffState)];
+		[item setState:((tape_get_state(xroar_tape_interface) & tag_value) ? NSOnState : NSOffState)];
 		break;
 
 	case TAG_WRITE_ENABLE:
@@ -975,45 +978,56 @@ int main(int argc, char **argv) {
 
 /* XRoar UI definition */
 
-static _Bool init(void);
-static void shutdown(void);
-static void set_state(enum ui_tag tag, int value, const void *data);
+static void *ui_macosx_new(void *cfg);
+static void ui_macosx_free(void *sptr);
+static void ui_macosx_set_state(void *sptr, int tag, int value, const void *data);
 
 static void update_machine_menu(void);
 static void update_cartridge_menu(void);
 
 struct ui_module ui_macosx_module = {
 	.common = { .name = "macosx", .description = "Mac OS X SDL UI",
-	            .init = init, .shutdown = shutdown },
+	            .new = ui_macosx_new,
+	},
 	.vo_module_list = sdl_vo_module_list,
 	.joystick_module_list = sdl_js_modlist,
-	.run = sdl_run,
-	.set_state = set_state,
 };
 
-static _Bool init(void) {
+static void *ui_macosx_new(void *cfg) {
+	struct ui_cfg *ui_cfg = cfg;
+	(void)ui_cfg;
+
 	if (!SDL_WasInit(SDL_INIT_NOPARACHUTE)) {
 		if (SDL_Init(SDL_INIT_NOPARACHUTE) < 0) {
 			LOG_ERROR("Failed to initialise SDL: %s\n", SDL_GetError());
-			return 0;
+			return NULL;
 		}
 	}
 
 	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
 		LOG_ERROR("Failed to initialise SDL video: %s\n", SDL_GetError());
-		return 0;
+		return NULL;
 	}
+
+	struct ui_interface *uimacosx = xmalloc(sizeof(*uimacosx));
+	*uimacosx = (struct ui_interface){0};
+
+	uimacosx->free = DELEGATE_AS0(void, ui_macosx_free, uimacosx);
+	uimacosx->run = DELEGATE_AS0(void, ui_sdl_run, uimacosx);
+	uimacosx->set_state = DELEGATE_AS3(void, int, int, cvoidp, ui_macosx_set_state, uimacosx);
 
 	update_machine_menu();
 	update_cartridge_menu();
 
 	sdl_keyboard_init();
 
-	return 1;
+	return uimacosx;
 }
 
-static void shutdown(void) {
+static void ui_macosx_free(void *sptr) {
+	struct ui_module *uimacosx = sptr;
 	SDL_QuitSubSystem(SDL_INIT_VIDEO);
+	free(uimacosx);
 }
 
 static void update_machine_menu(void) {
@@ -1041,12 +1055,12 @@ static void update_cartridge_menu(void) {
 	NSMenuItem *item;
 	struct slist *ccl = slist_reverse(slist_copy(cart_config_list()));
 	struct slist *iter;
-	struct cart *machine_cart = machine_get_cart();
+	struct cart *cart = xroar_machine ? xroar_machine->get_interface(xroar_machine, "cart") : NULL;
 	while ([cartridge_menu numberOfItems] > 0)
 		[cartridge_menu removeItem:[cartridge_menu itemAtIndex:0]];
 	for (iter = ccl; iter; iter = iter->next) {
 		struct cart_config *cc = iter->data;
-		if (machine_cart && cc == machine_cart->config)
+		if (cart && cc == cart->config)
 			current_cartridge = TAG_CARTRIDGE | cc->id;
 		NSString *description = [[NSString alloc] initWithUTF8String:cc->description];
 		item = [[NSMenuItem alloc] initWithTitle:description action:@selector(do_set_state:) keyEquivalent:@""];
@@ -1063,7 +1077,8 @@ static void update_cartridge_menu(void) {
 	slist_free(ccl);
 }
 
-static void set_state(enum ui_tag tag, int value, const void *data) {
+static void ui_macosx_set_state(void *sptr, int tag, int value, const void *data) {
+	(void)sptr;
 
 	switch (tag) {
 
@@ -1087,8 +1102,8 @@ static void set_state(enum ui_tag tag, int value, const void *data) {
 				we = !disk->write_protect;
 				wb = disk->write_back;
 			}
-			set_state(ui_tag_disk_write_enable, value, (void *)(intptr_t)we);
-			set_state(ui_tag_disk_write_back, value, (void *)(intptr_t)wb);
+			ui_macosx_set_state(sptr, ui_tag_disk_write_enable, value, (void *)(intptr_t)we);
+			ui_macosx_set_state(sptr, ui_tag_disk_write_back, value, (void *)(intptr_t)wb);
 		}
 		break;
 
