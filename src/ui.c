@@ -2,7 +2,7 @@
 
 User-interface modules & interfaces
 
-Copyright 2003-2018 Ciaran Anscomb
+Copyright 2003-2019 Ciaran Anscomb
 
 This file is part of XRoar.
 
@@ -36,20 +36,20 @@ static struct ui_module * const default_ui_module_list[] = {
 #endif
 #endif
 #ifdef HAVE_SDL2
-#ifdef WINDOWS32
-	&ui_windows32_module,
-#endif
-	&ui_sdl_module,
-#endif
-#ifdef HAVE_SDL
 #ifdef HAVE_COCOA
 	&ui_macosx_module,
 #else
 #ifdef WINDOWS32
 	&ui_windows32_module,
 #endif
+#endif
 	&ui_sdl_module,
 #endif
+#ifdef HAVE_SDL
+#ifdef WINDOWS32
+	&ui_windows32_module,
+#endif
+	&ui_sdl_module,
 #endif
 	&ui_null_module,
 	NULL

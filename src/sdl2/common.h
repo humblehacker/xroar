@@ -2,7 +2,7 @@
 
 SDL2 user-interface common functions
 
-Copyright 2015-2017 Ciaran Anscomb
+Copyright 2015-2019 Ciaran Anscomb
 
 This file is part of XRoar.
 
@@ -70,6 +70,13 @@ int sdl_x11_keysym_to_unicode(SDL_Keysym *);
 
 #endif
 
+#ifdef HAVE_COCOA
+
+void sdl_cocoa_keyboard_init(SDL_Window *);
+int sdl_cocoa_keysym_to_unicode(SDL_Keysym *keysym);
+
+#endif
+
 #ifdef WINDOWS32
 
 #ifdef HAVE_KBD_TRANSLATE
@@ -94,6 +101,8 @@ inline void sdl_os_keyboard_init(SDL_Window *sw) {
 #ifdef HAVE_KBD_TRANSLATE
 #if defined(HAVE_X11)
 	sdl_x11_keyboard_init(sw);
+#elif defined(HAVE_COCOA)
+	sdl_cocoa_keyboard_init(sw);
 #elif defined(WINDOWS32)
 	sdl_windows32_keyboard_init(sw);
 #endif
@@ -133,6 +142,8 @@ inline int sdl_os_keysym_to_unicode(SDL_Keysym *keysym) {
 #ifdef HAVE_KBD_TRANSLATE
 #if defined(HAVE_X11)
 	return sdl_x11_keysym_to_unicode(keysym);
+#elif defined(HAVE_COCOA)
+	return sdl_cocoa_keysym_to_unicode(keysym);
 #elif defined(WINDOWS32)
 	return sdl_windows32_keysym_to_unicode(keysym);
 #endif

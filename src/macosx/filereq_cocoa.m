@@ -2,7 +2,7 @@
 
 Cocoa file requester module for Mac OS X
 
-Copyright 2011-2014 Ciaran Anscomb
+Copyright 2011-2019 Ciaran Anscomb
 
 This file is part of XRoar.
 
@@ -38,6 +38,7 @@ static char *filename = NULL;
 /* Assuming filenames are UTF8 strings seems to do the job */
 
 static char *load_filename(char const * const *extensions) {
+	NSWindow *keyWindow = [[NSApplication sharedApplication] keyWindow];
 	NSOpenPanel *dialog = [NSOpenPanel openPanel];
 	(void)extensions;
 	cocoa_super_all_keys = 1;
@@ -45,14 +46,16 @@ static char *load_filename(char const * const *extensions) {
 		free(filename);
 		filename = NULL;
 	}
-	if ([dialog runModal] == NSFileHandlingPanelOKButton) {
+	if ([dialog runModal] == NSModalResponseOK) {
 		filename = xstrdup([[[[dialog URLs] objectAtIndex:0] path] UTF8String]);
 	}
 	cocoa_super_all_keys = 0;
+	[keyWindow makeKeyAndOrderFront:nil];
 	return filename;
 }
 
 static char *save_filename(char const * const *extensions) {
+	NSWindow *keyWindow = [[NSApplication sharedApplication] keyWindow];
 	NSSavePanel *dialog = [NSSavePanel savePanel];
 	(void)extensions;
 	cocoa_super_all_keys = 1;
@@ -60,9 +63,10 @@ static char *save_filename(char const * const *extensions) {
 		free(filename);
 		filename = NULL;
 	}
-	if ([dialog runModal] == NSFileHandlingPanelOKButton) {
+	if ([dialog runModal] == NSModalResponseOK) {
 		filename = xstrdup([[[dialog URL] path] UTF8String]);
 	}
 	cocoa_super_all_keys = 0;
+	[keyWindow makeKeyAndOrderFront:nil];
 	return filename;
 }
