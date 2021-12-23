@@ -1,3 +1,6 @@
+
+ * Open IDE images in binary mode under Windows [by Tormod Volden]
+
 Version 1.0.4, Sun 12 Dec 2021
 
  * GIME IO range fixes [Roger Taylor]
