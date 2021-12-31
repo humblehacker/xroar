@@ -1,5 +1,7 @@
 
  * Fix SDL audio thread interactions
+ * Try multiple SDL video renderers in order
+ * Fix composite phase setting
 
 Version 1.0.5, Thu 23 Dec 2021
 
