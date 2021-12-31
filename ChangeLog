@@ -1,3 +1,4 @@
+Version 1.0.6, Fri 31 Dec 2021
 
  * Fix SDL audio thread interactions
  * Try multiple SDL video renderers in order
