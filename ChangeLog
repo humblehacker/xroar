@@ -1,3 +1,7 @@
+Version 1.0.7, Sat  1 Jan 2022
+
+ * Fix Windows 11 video (set SDL hint to use different renderer)
+
 Version 1.0.6, Fri 31 Dec 2021
 
  * Fix SDL audio thread interactions
