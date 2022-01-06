@@ -118,7 +118,7 @@ struct machine_dragon {
 	} keyboard;
 
 	// NTSC colour bursts
-	_Bool use_ntsc_burst_mod; // 0 for PAL-M (green-magenta artifacting)
+	_Bool use_ntsc_burst_mod; // 0 for PAL-M (green-magenta artefacting)
 	unsigned ntsc_burst_mod;
 	struct ntsc_burst *ntsc_burst[4];
 
