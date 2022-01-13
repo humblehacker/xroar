@@ -1,6 +1,6 @@
 Version 1.0.8, Thu 13 Jan 2022
 
- * Fix WASM audio for non-Firefox (Greg Dionne)
+ * Fix WASM audio for non-Firefox [Greg Dionne]
  * Fix crash reading zero-length CAS file
  * Fix joystick reads for Pacdude Monster Maze
 
