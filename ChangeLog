@@ -1,3 +1,6 @@
+
+ * Fix joystick reads for Pacdude Monster Maze
+
 Version 1.0.7, Sat  1 Jan 2022
 
  * Fix Windows 11 video (set SDL hint to use different renderer)
