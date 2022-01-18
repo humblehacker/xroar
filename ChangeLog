@@ -1,3 +1,6 @@
+
+ * Close file after serialisation [Steve Rasmussen]
+
 Version 1.0.8, Thu 13 Jan 2022
 
  * Fix WASM audio for non-Firefox [Greg Dionne]
