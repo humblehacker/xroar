@@ -1019,14 +1019,14 @@ static void cue_add_block(struct tape_cas *cas, int type, int size, _Bool ascii,
 	} else {
 		oldpos = ftello(cas->fd);
 		fseeko(cas->fd, offset, SEEK_SET);
-		(void)fread(block, 1, size, cas->fd);
+		size = fread(block, 1, size, cas->fd);
 	}
 	for (int i = 0; i < size; i++) {
 		if (ascii && block[i] == 0x0a)
 			block[i] = 0x0d;
 		sum += block[i];
 	}
-	if (data) {
+	if (!data) {
 		fseeko(cas->fd, oldpos, SEEK_SET);
 	}
 
