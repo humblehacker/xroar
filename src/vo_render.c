@@ -694,6 +694,8 @@ void vo_render_set_active_area(void *sptr, int x, int y, int w, int h) {
 // Set sampling frequency (equal to pixel rate) to one of VO_RENDER_FS_*
 
 void vo_render_set_cmp_fs(struct vo_render *vr, _Bool notify, int fs) {
+	if (!vr)
+		return;
 	if (fs < 0 || fs >= NUM_VO_RENDER_FS) {
 		fs = VO_RENDER_FS_14_31818;
 	}
@@ -707,6 +709,8 @@ void vo_render_set_cmp_fs(struct vo_render *vr, _Bool notify, int fs) {
 // Set chroma subcarrier frequency to one of VO_RENDER_FSC_*
 
 void vo_render_set_cmp_fsc(struct vo_render *vr, _Bool notify, int fsc) {
+	if (!vr)
+		return;
 	if (fsc < 0 || fsc >= NUM_VO_RENDER_FSC) {
 		fsc = VO_RENDER_FSC_4_43361875;
 	}
@@ -720,6 +724,8 @@ void vo_render_set_cmp_fsc(struct vo_render *vr, _Bool notify, int fsc) {
 // Set colour system to one of VO_RENDER_SYSTEM_*
 
 void vo_render_set_cmp_system(struct vo_render *vr, _Bool notify, int system) {
+	if (!vr)
+		return;
 	if (system < 0 || system >= NUM_VO_RENDER_SYSTEM) {
 		system = VO_RENDER_SYSTEM_PAL_I;
 	}
@@ -734,6 +740,8 @@ void vo_render_set_cmp_system(struct vo_render *vr, _Bool notify, int system) {
 // (where supported)
 
 void vo_render_set_cmp_colour_killer(struct vo_render *vr, _Bool notify, _Bool value) {
+	if (!vr)
+		return;
 	vr->cmp.colour_killer = value;
 	if (notify && xroar_ui_interface) {
 		DELEGATE_CALL(xroar_ui_interface->update_state, ui_tag_cmp_colour_killer, (int)value, NULL);
