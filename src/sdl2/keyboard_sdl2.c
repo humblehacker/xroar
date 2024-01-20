@@ -62,6 +62,7 @@ static struct joystick_axis *configure_axis(char *, unsigned);
 static struct joystick_button *configure_button(char *, unsigned);
 static void unmap_axis(struct joystick_axis *axis);
 static void unmap_button(struct joystick_button *button);
+static _Bool sdl_ctrlIsAppControl();
 
 struct joystick_submodule sdl_js_submod_keyboard = {
 	.name = "keyboard",
@@ -126,8 +127,10 @@ static struct scancode_dkey_mapping scancode_dkey_default[] = {
 	{ SDL_SCANCODE_MODE, DSCAN_ALT, 1 },
 	{ SDL_SCANCODE_RALT, DSCAN_ALT, 1 },
 	{ SDL_SCANCODE_CAPSLOCK, DSCAN_CTRL, 1 },
+#if !defined(HAVE_COCOA)
 	{ SDL_SCANCODE_LGUI, DSCAN_CTRL, 1 },
 	{ SDL_SCANCODE_RGUI, DSCAN_CTRL, 1 },
+#endif
 	{ SDL_SCANCODE_F1, DSCAN_F1, 1 },
 	{ SDL_SCANCODE_F2, DSCAN_F2, 1 },
 
@@ -138,6 +141,11 @@ static struct scancode_dkey_mapping scancode_dkey_default[] = {
 	{ SDL_SCANCODE_KP_PERIOD, DSCAN_FULL_STOP, 1 },
 	{ SDL_SCANCODE_KP_DIVIDE, DSCAN_SLASH, 1 },
 	{ SDL_SCANCODE_KP_ENTER, DSCAN_ENTER, 0 },
+
+#if defined(HAVE_COCOA)
+	{ SDL_SCANCODE_LCTRL, DSCAN_CTRL, 1 },
+	{ SDL_SCANCODE_RCTRL, DSCAN_CTRL, 1 },
+#endif
 };
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -399,11 +407,16 @@ void sdl_keypress(struct ui_sdl2_interface *uisdl2, SDL_Keysym *keysym) {
 	_Bool shift = mod & KMOD_SHIFT;
 	_Bool ralt = mod & KMOD_RALT;
 	_Bool control = !ralt && (mod & KMOD_CTRL);
+    _Bool gui = mod & KMOD_GUI;
 
 	// Always clear our "control" state if the modifier isn't set.
 	if (!control) {
 		uisdl2->keyboard.control = 0;
 	}
+
+    if (!gui) {
+        uisdl2->keyboard.appControl = 0;
+    }
 
 	// If scancode preempts, never do a unicode lookup.
 	if (uisdl2->keyboard.scancode_preempt[scancode]) {
@@ -421,10 +434,21 @@ void sdl_keypress(struct ui_sdl2_interface *uisdl2, SDL_Keysym *keysym) {
 		return;
 	case SDLK_LCTRL: case SDLK_RCTRL:
 		if (control) {
-			uisdl2->keyboard.control = 1;
+            if (sdl_ctrlIsAppControl()) {
+                uisdl2->keyboard.appControl = 1;
+            }
+            uisdl2->keyboard.control = 1;
 			return;
 		}
 		break;
+    case SDLK_LGUI: case SDLK_RGUI:
+        if (gui) {
+            if (!sdl_ctrlIsAppControl()) {
+                uisdl2->keyboard.appControl = 1;
+            }
+            return;
+        }
+        break;
 #ifndef HAVE_WASM
 	case SDLK_F11:
 		xroar_set_fullscreen(1, XROAR_NEXT);
@@ -444,7 +468,7 @@ void sdl_keypress(struct ui_sdl2_interface *uisdl2, SDL_Keysym *keysym) {
 		break;
 	}
 
-	if (uisdl2->keyboard.control) {
+    if (uisdl2->keyboard.appControl) {
 		control_keypress(uisdl2, keysym);
 		return;
 	}
@@ -516,10 +540,15 @@ void sdl_keyrelease(struct ui_sdl2_interface *uisdl2, SDL_Keysym *keysym) {
 	_Bool shift = mod & KMOD_SHIFT;
 	//_Bool ralt = mod & KMOD_RALT;
 	_Bool control = mod & KMOD_CTRL;
+    _Bool gui = mod & KMOD_GUI;
 
 	if (!control) {
 		uisdl2->keyboard.control = 0;
 	}
+
+    if (!gui) {
+        uisdl2->keyboard.appControl = 0;
+    }
 
 	// If scancode preempts, never do a unicode lookup.
 	if (uisdl2->keyboard.scancode_preempt[scancode]) {
@@ -664,4 +693,12 @@ static void unmap_button(struct joystick_button *button) {
 	}
 	free(button->data);
 	free(button);
+}
+
+static _Bool sdl_ctrlIsAppControl() {
+#if defined(HAVE_COCOA)
+    return SDL_FALSE;
+#else
+    return SDL_TRUE;
+#endif
 }

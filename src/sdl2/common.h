@@ -51,6 +51,8 @@ struct ui_sdl2_interface {
 		int unicode_last_scancode[SDL_NUM_SCANCODES];
 		// Is a control key pressed that's not bound to a dkey?
 		_Bool control;
+        // Is an application control key pressed?
+        _Bool appControl;
 	} keyboard;
 
 	// Pointer state
