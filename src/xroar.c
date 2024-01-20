@@ -71,6 +71,7 @@
 #include "wasm/wasm.h"
 #include "xconfig.h"
 #include "xroar.h"
+#include "git-version.h"
 
 #ifdef WINDOWS32
 #include "windows32/common_windows32.h"
@@ -2795,7 +2796,7 @@ static void helptext(void) {
 
 static void versiontext(void) {
 #ifdef LOGGING
-	printf("%s", PACKAGE_TEXT);
+	printf("%s (%s)", PACKAGE_TEXT, GIT_VERSION);
 	puts(
 "\nCopyright (C) " PACKAGE_YEAR " Ciaran Anscomb\n"
 "License: GNU GPL version 3 or later <https://www.gnu.org/licenses/gpl-3.0.html>.\n"

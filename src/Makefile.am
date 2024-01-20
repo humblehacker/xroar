@@ -6,6 +6,10 @@ AM_CPPFLAGS = -I$(top_builddir)
 
 bin_PROGRAMS += xroar
 
+.PHONY: force
+
+noinst_HEADERS = git-version.h
+
 BUILT_SOURCES =
 
 # Common sources
@@ -55,7 +59,8 @@ xroar_SOURCES = \
 	vo.c vo.h \
 	vo_render.c vo_render.h \
 	xconfig.c xconfig.h \
-	xroar.c xroar.h
+	xroar.c xroar.h \
+	git-version.h
 
 if MACHINE_ARCH_DRAGON
 xroar_SOURCES += \
@@ -448,6 +453,12 @@ if FILEREQ_CLI
 xroar_SOURCES += \
 	filereq_cli.c
 endif
+
+git-version.h: force
+	@echo "// Generated file. Any edits will be lost\n" > $@.tmp
+	@echo '#define GIT_VERSION "'`git describe --dirty --tags 2>/dev/null || echo unknown`'"' >> $@.tmp
+	@cmp -s $@.tmp $@ || mv $@.tmp $@
+	@rm -f $@.tmp
 
 clean-local:
 	rm -f xroar.wasm
